@@ -51,3 +51,7 @@ func ConnectDB(config PgConfig) *pgxpool.Pool {
 
 	return db
 }
+
+func CloseDB(db *pgxpool.Pool) {
+	db.Close()
+}

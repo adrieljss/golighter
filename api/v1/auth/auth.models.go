@@ -3,9 +3,9 @@ package v1_auth
 import "github.com/adrieljss/golighter/models"
 
 type userRegister struct {
-	Username string `json:"username" validate:"required,max=30"`
-	Email    string `json:"email" validate:"required,email"`
-	Password string `json:"password" validate:"required"`
+	Username string `json:"username" validate:"required,max=30" faker:"username"`
+	Email    string `json:"email" validate:"required,email" faker:"email"`
+	Password string `json:"password" validate:"required" faker:"password"`
 }
 
 type userLogin struct {

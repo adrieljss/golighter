@@ -7,8 +7,8 @@ import (
 	"github.com/gofiber/fiber/v3/middleware/logger"
 )
 
-func SetupRoutes(fiberApp *fiber.App, app *platform.Application) {
-	api := fiberApp.Group("/api")
+func SetupRoutes(app *platform.Application) {
+	api := app.FiberApp.Group("/api")
 	api.Use("/", AcceptJson())
 	api.Use("/", logger.New())
 

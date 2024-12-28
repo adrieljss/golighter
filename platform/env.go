@@ -30,9 +30,28 @@ type Env struct {
 	JWTRefreshTokenTTL    time.Duration `mapstructure:"JWT_REFRESH_TOKEN_TTL"`
 }
 
-func NewEnv() *Env {
+func NewEnv(configFile string) *Env {
 	env := &Env{}
-	viper.SetConfigFile(".env")
+
+	// recursively search for the .env file
+	// use this because in testing mode, the
+	// working directory is the test directory
+	// and not the root directory
+	maxDepth := 10
+	for i := 0; i < maxDepth; i++ {
+		viper.SetConfigFile(configFile)
+		viper.SetConfigType("env")
+
+		err := viper.ReadInConfig()
+		if err == nil {
+			break
+		}
+
+		configFile = "../" + configFile
+	}
+
+	viper.SetConfigFile(configFile)
+	viper.SetConfigType("env")
 
 	err := viper.ReadInConfig()
 	if err != nil {

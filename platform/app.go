@@ -19,20 +19,38 @@ import (
 
 // for read only, it's safe to use pointers
 type Application struct {
-	Env    *Env          // read-only
-	Db     *pgxpool.Pool // read-only
-	Mailer *SMTPMailer   // read-only
+	Env      *Env          // read-only
+	Db       *pgxpool.Pool // read-only
+	Mailer   *SMTPMailer   // read-only
+	FiberApp *fiber.App    // read-only
 }
 
-// initialize env, db, mailer (in that order)
-func App() Application {
+// Initialize env, db, mailer (in that order).
+// TestingMode will load env vars from .env.test instead of .env
+func App(testingMode ...bool) Application {
 	app := Application{}
 
-	app.Env = NewEnv()
+	isTesting := false
+	if len(testingMode) > 0 {
+		isTesting = testingMode[0]
+	}
+
+	if isTesting {
+		app.Env = NewEnv(".env.test")
+	} else {
+		app.Env = NewEnv(".env")
+	}
+
 	app.Db = ConnectDB(initPgConfig(app.Env))
 	app.Mailer = NewMailer(initMailerConfig(app.Env))
+	app.FiberApp = fiber.New(InitFiberConfig())
 
 	return app
+}
+
+// closes db connections, etc.
+func (app *Application) CloseApp() {
+	CloseDB(app.Db)
 }
 
 func initPgConfig(env *Env) PgConfig {
