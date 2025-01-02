@@ -41,7 +41,7 @@ func (u *AuthUsecase) GenerateTokenPair(user *models.User) (string, string, erro
 	return accessToken, refreshToken, nil
 }
 
-func (u *AuthUsecase) CreateUser(ctx context.Context, user *userRegister) (*userResponse, error) {
+func (u *AuthUsecase) CreateUser(ctx context.Context, user *UserRegister) (*UserResponse, error) {
 	newUser, err := u.UserUsecase.UserRepo.Create(ctx, user.Username, user.Email, user.Password)
 	if err != nil {
 		return nil, err
@@ -52,16 +52,16 @@ func (u *AuthUsecase) CreateUser(ctx context.Context, user *userRegister) (*user
 		return nil, err
 	}
 
-	return &userResponse{
+	return &UserResponse{
 		User: newUser,
-		Token: tokenResponse{
+		Token: TokenResponse{
 			AccessToken:  accessToken,
 			RefreshToken: refreshToken,
 		},
 	}, nil
 }
 
-func (u *AuthUsecase) LoginUser(ctx context.Context, user *userLogin) (*userResponse, error) {
+func (u *AuthUsecase) LoginUser(ctx context.Context, user *UserLogin) (*UserResponse, error) {
 	newUser, err := u.UserUsecase.UserRepo.GetByEmail(ctx, user.Email)
 	if err != nil {
 		return nil, err
@@ -76,9 +76,9 @@ func (u *AuthUsecase) LoginUser(ctx context.Context, user *userLogin) (*userResp
 		return nil, err
 	}
 
-	return &userResponse{
+	return &UserResponse{
 		User: newUser,
-		Token: tokenResponse{
+		Token: TokenResponse{
 			AccessToken:  accessToken,
 			RefreshToken: refreshToken,
 		},
@@ -87,7 +87,7 @@ func (u *AuthUsecase) LoginUser(ctx context.Context, user *userLogin) (*userResp
 
 // RefreshAccessToken refreshes the access token, returns the new access token
 func (u *AuthUsecase) RefreshAccessToken(ctx context.Context, refresh_token string) (string, error) {
-	claims, err := utils.ValidateJWT(refresh_token, u.Env.JWTSecretAccessToken)
+	claims, err := utils.ValidateJWT(refresh_token, u.Env.JWTSecretRefreshToken)
 	if err != nil {
 		return "", err
 	}

@@ -6,10 +6,8 @@ import (
 	"fmt"
 
 	"github.com/adrieljss/golighter/utils"
-	"github.com/go-playground/locales/en"
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
-	en_translations "github.com/go-playground/validator/v10/translations/en"
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/log"
 	"github.com/jackc/pgx/v5"
@@ -82,10 +80,10 @@ func (v *structValidator) Validate(out any) error {
 }
 
 func InitFiberConfig() fiber.Config {
-	en := en.New()
-	trans, _ := ut.New(en, en).GetTranslator("en")
 	validate := validator.New()
-	en_translations.RegisterDefaultTranslations(validate, trans)
+
+	_, trans := initTranslator()
+	initValidators(validate, trans)
 
 	return fiber.Config{
 		JSONEncoder:     json.Marshal,
@@ -100,7 +98,7 @@ func errorHandlerFunc(trans ut.Translator) fiber.ErrorHandler {
 		if validationErrors, ok := err.(validator.ValidationErrors); ok {
 			metadata := utils.NewMetadata()
 			for _, err := range validationErrors {
-				metadata.Set(err.Tag(), err.Translate(trans))
+				metadata.Set(err.ActualTag(), err.Translate(trans))
 			}
 			return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 				"error":    "validation error",
@@ -112,6 +110,11 @@ func errorHandlerFunc(trans ut.Translator) fiber.ErrorHandler {
 		var e *fiber.Error
 		if errors.As(err, &e) {
 			code = e.Code
+			if code == fiber.StatusNotFound {
+				return ctx.Status(code).JSON(fiber.Map{
+					"error": "not found",
+				})
+			}
 		}
 
 		if errors.Is(err, pgx.ErrNoRows) {

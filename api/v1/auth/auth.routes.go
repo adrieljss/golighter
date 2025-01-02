@@ -16,11 +16,12 @@ func SetupAuthRoutes(router fiber.Router, app *platform.Application) {
 	authUsecase := NewAuthUsecase(app)
 	auth.Post("/register", RegisterUser(authUsecase))
 	auth.Post("/login", LoginUser(authUsecase))
+	auth.Post("/refresh", RefreshToken(authUsecase))
 }
 
 func RegisterUser(authUsecase *AuthUsecase) fiber.Handler {
 	return func(ctx fiber.Ctx) error {
-		var user userRegister
+		var user UserRegister
 		err := ctx.Bind().Body(&user)
 		if err != nil {
 			return err
@@ -37,7 +38,7 @@ func RegisterUser(authUsecase *AuthUsecase) fiber.Handler {
 
 func LoginUser(authUsecase *AuthUsecase) fiber.Handler {
 	return func(ctx fiber.Ctx) error {
-		var user userLogin
+		var user UserLogin
 		err := ctx.Bind().Body(&user)
 		if err != nil {
 			return err
@@ -60,7 +61,7 @@ func LoginUser(authUsecase *AuthUsecase) fiber.Handler {
 
 func RefreshToken(authUsecase *AuthUsecase) fiber.Handler {
 	return func(ctx fiber.Ctx) error {
-		var user userRefreshToken
+		var user UserRefreshToken
 		err := ctx.Bind().Body(&user)
 		if err != nil {
 			return err
@@ -71,6 +72,8 @@ func RefreshToken(authUsecase *AuthUsecase) fiber.Handler {
 			return err
 		}
 
-		return ctx.Status(fiber.StatusOK).JSON(response)
+		return ctx.Status(fiber.StatusOK).JSON(AccTokenResponse{
+			AccessToken: response,
+		})
 	}
 }

@@ -17,7 +17,7 @@ func SetupRoutes(app *platform.Application) {
 
 func AcceptJson() fiber.Handler {
 	return func(ctx fiber.Ctx) error {
-		ctx.Accepts("application/json")
+		ctx.Accepts(fiber.MIMEApplicationJSON)
 		return ctx.Next()
 	}
 }

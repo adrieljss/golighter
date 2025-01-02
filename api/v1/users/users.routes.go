@@ -11,7 +11,7 @@ func SetupUsersRoutes(router fiber.Router, app *platform.Application) {
 	users := router.Group("/users")
 
 	userUsecase := NewUserUsecase(app)
-	users.Get("/me", GetMe(userUsecase), middlewares.AuthMiddleware(app))
+	users.Get("/@me", GetMe(userUsecase), middlewares.AuthMiddleware(app))
 }
 
 func GetMe(userUsecase *UserUsecase) fiber.Handler {
