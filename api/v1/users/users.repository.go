@@ -78,6 +78,7 @@ func (r *userRepository) UpdateProfile(ctx context.Context, uid string, username
 	return err
 }
 
+// might not be used, since emails are usually permanent
 func (r *userRepository) UpdateEmail(ctx context.Context, uid string, email string) error {
 	query := `UPDATE users SET email = $1 WHERE uid = $2`
 	_, err := r.Db.Exec(ctx, query, email, uid)
@@ -95,7 +96,6 @@ func (r *userRepository) UpdatePassword(ctx context.Context, uid string, passwor
 	return err
 }
 
-// dangerous operation, deletes the user from the database
 func (r *userRepository) Delete(ctx context.Context, uid string) error {
 	query := `DELETE FROM users WHERE uid = $1`
 	_, err := r.Db.Exec(ctx, query, uid)

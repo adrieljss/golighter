@@ -3,12 +3,13 @@ package utils
 import (
 	"time"
 
+	"github.com/adrieljss/golighter/models"
 	"github.com/golang-jwt/jwt/v5"
 )
 
 type UserTokenClaim struct {
-	UID  string `json:"uid"`
-	Role int    `json:"role"`
+	UID             string            `json:"uid"`
+	PermissionFlags models.Permission `json:"permission_flags"`
 }
 
 type Claims struct {

@@ -25,8 +25,8 @@ func NewAuthUsecase(app *platform.Application) *AuthUsecase {
 
 func (u *AuthUsecase) GenerateTokenPair(user *models.User) (string, string, error) {
 	userTokenClaim := utils.UserTokenClaim{
-		UID:  user.UID,
-		Role: user.Role,
+		UID:             user.UID,
+		PermissionFlags: user.Permissions,
 	}
 	accessToken, err := utils.GenerateJWT(&userTokenClaim, u.Env.JWTSecretAccessToken, u.Env.JWTAccessTokenTTL)
 	if err != nil {

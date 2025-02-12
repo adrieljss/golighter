@@ -2,7 +2,6 @@ package v1_auth
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"testing"
 
@@ -152,8 +151,6 @@ func TestAuthFlow(t *testing.T, app *platform.Application) {
 			assert.Equal(t, currentUserRes.User, &meResponse)
 		})
 	})
-
-	fmt.Printf("%+v\n", currentUserRes)
 
 	t.Run("Token Flow", func(t *testing.T) {
 		t.Run("Refresh Token Invalid Fields", func(t *testing.T) {

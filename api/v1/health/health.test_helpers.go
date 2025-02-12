@@ -9,6 +9,7 @@ import (
 )
 
 func TestHealth(t *testing.T, app *platform.Application) {
+	t.Helper()
 	t.Run("Health Check", func(t *testing.T) {
 		testutils.TestReqs(t, app.FiberApp, []testutils.TestRequest{
 			{
